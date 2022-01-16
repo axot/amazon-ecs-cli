@@ -79,17 +79,23 @@ generate-deps:
 windows-build: $(WINDOWS_BINARY)
 
 .PHONY: docker-build
-docker-build:
+docker-build: docker-build-linux docker-build-darwin docker-build-windows
+
+docker-build-linux:
 	docker run -v $(shell pwd):/usr/src/app/src/github.com/aws/amazon-ecs-cli \
 		--workdir=/usr/src/app/src/github.com/aws/amazon-ecs-cli \
 		--env GOPATH=/usr/src/app \
 		--env ECS_RELEASE=$(ECS_RELEASE) \
 		golang:$(GO_RELEASE_TAG) make $(LINUX_BINARY)
+
+docker-build-darwin:
 	docker run -v $(shell pwd):/usr/src/app/src/github.com/aws/amazon-ecs-cli \
 		--workdir=/usr/src/app/src/github.com/aws/amazon-ecs-cli \
 		--env GOPATH=/usr/src/app \
 		--env ECS_RELEASE=$(ECS_RELEASE) \
 		golang:$(GO_RELEASE_TAG) make $(DARWIN_BINARY)
+
+docker-build-windows:
 	docker run -v $(shell pwd):/usr/src/app/src/github.com/aws/amazon-ecs-cli \
 		--workdir=/usr/src/app/src/github.com/aws/amazon-ecs-cli \
 		--env GOPATH=/usr/src/app \
