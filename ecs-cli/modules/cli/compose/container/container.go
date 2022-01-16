@@ -63,14 +63,13 @@ func (c *Container) Id() string {
 // ECS doesn't have a describe container API so providing the task's UUID in the name enables users
 // to easily look up this container in the ecs world by invoking DescribeTask
 func (c *Container) Name() string {
-	return utils.GetFormattedContainerName(c.TaskId(), aws.StringValue(c.ecsContainer.Name))
+	taskId := utils.GetIdFromArn(aws.StringValue(c.task.TaskArn))
+	return utils.GetFormattedContainerName(taskId, aws.StringValue(c.ecsContainer.Name))
 }
 
-// Name returns the task's UUID with the container
-// ECS doesn't have a describe container API so providing the task's UUID in the name enables users
-// to easily look up this container in the ecs world by invoking DescribeTask
+// TaskId returns the task's UUID
 func (c *Container) TaskId() string {
-	return utils.GetIdFromArn(aws.StringValue(c.task.TaskArn))
+	return utils.GetTaskIdFromArn(aws.StringValue(c.task.TaskArn))
 }
 
 // TaskDefinition returns the ECS task definition id which encompasses the container definition, with

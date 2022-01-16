@@ -51,6 +51,15 @@ func GetIdFromArn(arn string) string {
 	return parts[1]
 }
 
+// GetIdFromArn parses an ARN and returns only the uuid part
+func GetTaskIdFromArn(arn string) string {
+	parts := strings.SplitN(arn, "/", 3)
+	if len(parts) != 3 {
+		return ""
+	}
+	return parts[2]
+}
+
 // GetAwsAccountIdFromArn parses an ARN and returns only the accountId portion
 func GetAwsAccountIdFromArn(arn string) string {
 	parts := strings.SplitN(arn, ":", 7)
