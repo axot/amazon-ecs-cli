@@ -17,13 +17,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aws/amazon-ecs-cli/ecs-cli/modules/utils/compose"
+	utils "github.com/aws/amazon-ecs-cli/ecs-cli/modules/utils/compose"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ecs"
 	"github.com/docker/libcompose/project"
 )
 
 const (
+	taskIdKey         = "TaskId"
 	containerNameKey  = "Name"
 	containerStateKey = "State"
 	containerPortsKey = "Ports"
@@ -32,7 +33,7 @@ const (
 )
 
 // ContainerInfoColumns is the ordered list of info columns for the ps commands
-var ContainerInfoColumns = []string{containerNameKey, containerStateKey, containerPortsKey, taskDefinitionKey, healthKey}
+var ContainerInfoColumns = []string{taskIdKey, containerNameKey, containerStateKey, containerPortsKey, taskDefinitionKey, healthKey}
 
 // Container is a wrapper around ecsContainer
 type Container struct {
@@ -40,7 +41,7 @@ type Container struct {
 	EC2IPAddress    string
 	networkBindings []*ecs.NetworkBinding
 
-	ecsContainer    *ecs.Container
+	ecsContainer *ecs.Container
 }
 
 // NewContainer creates a new instance of the container and sets the task id and ecs container to it
@@ -62,8 +63,14 @@ func (c *Container) Id() string {
 // ECS doesn't have a describe container API so providing the task's UUID in the name enables users
 // to easily look up this container in the ecs world by invoking DescribeTask
 func (c *Container) Name() string {
-	taskID := utils.GetIdFromArn(aws.StringValue(c.task.TaskArn))
-	return utils.GetFormattedContainerName(taskID, aws.StringValue(c.ecsContainer.Name))
+	return utils.GetFormattedContainerName(c.TaskId(), aws.StringValue(c.ecsContainer.Name))
+}
+
+// Name returns the task's UUID with the container
+// ECS doesn't have a describe container API so providing the task's UUID in the name enables users
+// to easily look up this container in the ecs world by invoking DescribeTask
+func (c *Container) TaskId() string {
+	return utils.GetIdFromArn(aws.StringValue(c.task.TaskArn))
 }
 
 // TaskDefinition returns the ECS task definition id which encompasses the container definition, with
@@ -126,6 +133,7 @@ func ConvertContainersToInfoSet(containers []Container) project.InfoSet {
 	for _, cont := range containers {
 		info := project.Info{
 			// TODO: Add more fields
+			taskIdKey:         cont.TaskId(),
 			containerNameKey:  cont.Name(),
 			containerStateKey: cont.State(),
 			containerPortsKey: cont.PortString(),
