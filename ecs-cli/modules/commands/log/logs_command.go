@@ -53,7 +53,7 @@ func logFlags() []cli.Flag {
 			Usage: "[Optional] Prints the logs for the given container. Required if containers in the Task use different log groups",
 		},
 		cli.IntFlag{
-			Name:  flags.SinceFlag,
+			Name:  flags.SinceFlag + ",s",
 			Usage: fmt.Sprintf("[Optional] Returns logs newer than a relative duration in minutes. Can not be used with --%s", flags.StartTimeFlag),
 		},
 		cli.StringFlag{
