@@ -77,7 +77,7 @@ func Logs(c *cli.Context) {
 }
 
 func logsRequest(context *cli.Context, ecsClient ecsclient.ECSClient, config *config.CommandConfig) (*cloudwatchlogs.FilterLogEventsInput, string, error) {
-	taskID := context.String(flags.TaskIDFlag)
+	taskID := context.Args().Get(0)
 	taskDefIdentifier := context.String(flags.TaskDefinitionFlag)
 
 	var err error
@@ -114,7 +114,7 @@ func logsRequest(context *cli.Context, ecsClient ecsclient.ECSClient, config *co
 
 func getTaskDefArn(context *cli.Context, ecsClient ecsclient.ECSClient, config *config.CommandConfig) (string, error) {
 	var taskIDs []*string
-	taskID := context.String(flags.TaskIDFlag)
+	taskID := context.Args().Get(0)
 	taskIDs = append(taskIDs, aws.String(taskID))
 	tasks, err := ecsClient.DescribeTasks(taskIDs)
 	if err != nil {
@@ -165,10 +165,6 @@ func printLogEvents(context *cli.Context, input *cloudwatchlogs.FilterLogEventsI
 
 // validateLogFlags ensures that conflicting flags are not used
 func validateLogFlags(context *cli.Context) error {
-	if taskID := context.String(flags.TaskIDFlag); taskID == "" {
-		return fmt.Errorf("TaskID must be specified with the --%s flag", flags.TaskIDFlag)
-	}
-
 	startTime := context.String(flags.StartTimeFlag)
 	endTime := context.String(flags.EndTimeFlag)
 	since := context.Int(flags.SinceFlag)

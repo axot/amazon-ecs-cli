@@ -37,15 +37,11 @@ func LogCommand() cli.Command {
 func logFlags() []cli.Flag {
 	return []cli.Flag{
 		cli.StringFlag{
-			Name:  flags.TaskIDFlag,
-			Usage: "Print the logs for this ECS Task.",
-		},
-		cli.StringFlag{
 			Name:  flags.TaskDefinitionFlag,
 			Usage: "[Optional] Specifies the name or full Amazon Resource Name (ARN) of the ECS Task Definition associated with the Task ID. This is only needed if the Task is using an inactive Task Definition.",
 		},
 		cli.BoolFlag{
-			Name:  flags.FollowLogsFlag,
+			Name:  flags.FollowLogsFlag + ",f",
 			Usage: "[Optional] Specifies if the logs should be streamed.",
 		},
 		cli.StringFlag{
